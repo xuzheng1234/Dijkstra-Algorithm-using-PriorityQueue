@@ -1,0 +1,70 @@
+private HashMap<String,Integer> edges=new HashMap<String,Integer>();//store the edges and their distances.
+private HashMap<String,Town> towns=new HashMap<String,Town>();//town info
+private int[][]shortest_paths;
+
+
+//computes the single source shortest path
+    //implements Dijkstra's Algorithm using PriorityQueue.
+    private int shortestPath(String start, String end)
+    {
+      
+    	if(towns.get(start)==null || towns.get(end)==null)
+    		return -1;
+    	
+    	if(start.equals(end))
+    		return 0;
+    	
+    	Town startTown=towns.get(start);
+    	Town endTown=towns.get(end);
+    	
+    	source_id=startTown.getId();
+    	
+    	
+    	if(shortest_paths[source_id][endTown.getId()]<Integer.MAX_VALUE)
+    	{
+    		return shortest_paths[source_id][endTown.getId()];
+    	}
+    	if(shortest_paths[source_id][endTown.getId()]==Integer.MAX_VALUE && shortest_paths_flag[source_id][endTown.getId()]==true)
+    	{
+    		return -1;
+    	}
+
+    	PriorityQueue<Town> queue=new PriorityQueue<Town>(towns.size(), TownDistanceComparator);
+
+    	queue.addAll(towns.values());
+    	
+    	while(queue.isEmpty()==false)
+    	{
+    		Town v=queue.remove();
+    	    if(v.getId()==endTown.getId())
+    	    {
+    	    	break;
+    	    }
+    		if(shortest_paths[source_id][v.getId()]==Integer.MAX_VALUE)
+    		{
+    			break;
+    		}
+    		
+    		for(Town w:v.getNeighbours())
+    		{
+    			int alt=shortest_paths[source_id][v.getId()]+edges.get(v.getName()+":"+w.getName());
+    			if(alt<shortest_paths[source_id][w.getId()] )
+    			{
+    			
+    				shortest_paths[source_id][w.getId()]=alt;
+    				queue.remove(w);
+    				queue.add(w);
+    				
+    			}
+
+    		}
+    	}
+
+    	shortest_paths_flag[source_id][endTown.getId()]=true;
+    	
+    	if(shortest_paths[source_id][endTown.getId()]<Integer.MAX_VALUE)
+    		return shortest_paths[source_id][endTown.getId()];
+    	else 
+    		return -1;
+
+    }
